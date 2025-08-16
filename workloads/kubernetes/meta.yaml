@@ -1,0 +1,4 @@
+source: git::git@github.com:alexmorbo/terraform-proxmox-talos.git?ref=v0.2.1
+providers:
+  - proxmox
+  - talos
