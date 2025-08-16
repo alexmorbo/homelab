@@ -27,11 +27,17 @@ homelab/
 │   ├── proxmox/               # Proxmox infrastructure
 │   │   ├── main.tfvars        # Proxmox configuration
 │   │   └── terragrunt.hcl     # Terragrunt configuration
-│   └── kubernetes/            # Kubernetes clusters
-│       ├── <environment>/     # Cluster environment (e.g., alpha, beta, prod)
-│       │   ├── main.tfvars    # Cluster configuration
+│   ├── kubernetes/            # Kubernetes clusters
+│   │   ├── <environment>/     # Cluster environment (e.g., alpha, beta, prod)
+│   │   │   ├── main.tfvars    # Cluster configuration
+│   │   │   └── terragrunt.hcl # Terragrunt configuration
+│   │   └── meta.yaml          # Cluster metadata
+│   └── cert-manager/          # Certificate management
+│       ├── <environment>/     # Environment-specific configuration
+│       │   ├── main.tfvars    # Environment overrides
 │       │   └── terragrunt.hcl # Terragrunt configuration
-│       └── meta.yaml          # Cluster metadata
+│       ├── common.tfvars      # Common configuration
+│       └── meta.yaml          # Workload metadata
 ├── main.hcl                   # Root Terragrunt configuration
 └── secrets.sops.yaml          # Encrypted secrets (SOPS)
 ```
@@ -133,6 +139,33 @@ controlplanes = {
   }
 }
 ```
+
+### Cert-Manager
+
+Located in `workloads/cert-manager/`, this manages:
+
+- **TLS Certificate Management**: Automated certificate issuance and renewal
+- **Cluster Issuers**: Self-signed and Cloudflare DNS challenge issuers
+- **Node Selection**: Configurable node placement and dedicated node support
+- **Helm Integration**: Uses Helm charts for deployment
+
+**Features**:
+- **Self-signed issuer**: For development and testing environments
+- **Cloudflare integration**: DNS challenge-based certificate issuance (configured in main.hcl)
+- **Node affinity**: Configurable node selection and taints
+- **External module**: Uses `terraform-helm-cert-manager` module
+
+**Example configuration**:
+```hcl
+# Basic configuration
+# Cluster issuer configuration
+self_signed_issuer = true
+```
+
+**Dependencies**:
+- Requires running Kubernetes cluster
+- Depends on kubernetes workload outputs
+- Uses Helm and Kubernetes providers
 
 ## 🔧 Modules
 
