@@ -5,11 +5,10 @@ locals {
   base_module_path = "${get_repo_root()}/modules"
 
   workload = local.path_parts[1]
-  module = try(local.path_parts[2], "")
-  env = try(local.path_parts[3], "")
+  env = try(local.path_parts[2], "")
 
   default_meta = {
-    source = join("/", compact(["modules", local.workload, local.module]))
+    source = join("/", compact(["modules", local.workload]))
     providers = []
   }
 
@@ -35,10 +34,8 @@ terraform {
       "${get_parent_terragrunt_dir()}/common.tfvars",
       "${join("/", compact([get_parent_terragrunt_dir(), "workloads", local.workload]))}/common.tfvars",
       "${join("/", compact([get_parent_terragrunt_dir(), "workloads", local.workload]))}/local.tfvars",
-      "${join("/", compact([get_parent_terragrunt_dir(), "workloads", local.workload, local.module]))}/common.tfvars",
-      "${join("/", compact([get_parent_terragrunt_dir(), "workloads", local.workload, local.module]))}/local.tfvars",
-      "${join("/", compact([get_parent_terragrunt_dir(), "workloads", local.workload, local.module, local.env]))}/main.tfvars",
-      "${join("/", compact([get_parent_terragrunt_dir(), "workloads", local.workload, local.module, local.env]))}/local.tfvars",
+      "${join("/", compact([get_parent_terragrunt_dir(), "workloads", local.workload, local.env]))}/main.tfvars",
+      "${join("/", compact([get_parent_terragrunt_dir(), "workloads", local.workload, local.env]))}/local.tfvars",
     ]
   }
 
@@ -58,7 +55,7 @@ generate "backend" {
       }
       bucket                      = "homelab-terraform-states"
       region                      = "ru-central1"
-      key                         = "${join("-", compact([local.workload, local.module, local.env]))}.tfstate"
+      key                         = "${join("-", compact([local.workload, local.env]))}.tfstate"
 
       access_key                  = "${local.secrets.backend.aws_access_key_id}"
       secret_key                  = "${local.secrets.backend.aws_secret_access_key}"
